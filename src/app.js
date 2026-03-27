@@ -58,6 +58,19 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: err.message || 'Error interno' });
 });
+app.get('/', (req, res) => {
+  res.send('¡Hola! Mi aplicación está funcionando en Railway 🚀');
+});
+
+// Tu API routes
+app.get('/api', (req, res) => {
+  res.json({ message: 'API funcionando' });
+});
+
+const port = process.env.PORT || 3000;
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Servidor corriendo en puerto ${port}`);
+});
 
 app.get('/', (req, res) => {
     res.json({
