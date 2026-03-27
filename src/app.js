@@ -59,4 +59,16 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message || 'Error interno' });
 });
 
+app.get('/', (req, res) => {
+    res.json({
+        message: 'API funcionando correctamente',
+        status: 'online',
+        endpoints: {
+            posts: '/api/posts',
+            users: '/api/users'
+            // agrega aquí tus endpoints
+        }
+    });
+});
+
 module.exports = app;
