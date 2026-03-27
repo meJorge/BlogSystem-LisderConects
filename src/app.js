@@ -17,10 +17,12 @@ try {
     console.log('✅ Todos los módulos cargados');
     
     const app = express();
-   const port = process.env.PORT || 8080;
+// AL FINAL de tu archivo src/app.js, ANTES de app.listen()
 
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Servidor corriendo en puerto ${port}`);
+const PORT = process.env.PORT || 3000;  // ← Agrega ESTA línea
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Servidor corriendo en puerto ${PORT}`);
 });
     
     console.log('🚀 Iniciando servidor en puerto', PORT);
@@ -71,10 +73,12 @@ app.get('/api', (req, res) => {
   res.json({ message: 'API funcionando' });
 });
 
-const port = process.env.PORT || 8080;
+// AL FINAL de tu archivo src/app.js, ANTES de app.listen()
 
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Servidor corriendo en puerto ${port}`);
+const PORT = process.env.PORT || 3000;  // ← Agrega ESTA línea
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Servidor corriendo en puerto ${PORT}`);
 });
 
 app.get('/', (req, res) => {
