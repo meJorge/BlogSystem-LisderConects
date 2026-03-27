@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlogX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Manrope:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  --ease: cubic-bezier(.4,0,.2,1);
+  --dur: .2s;
+}
+[data-theme="dark"] {
+  --bg:        #0a0c0e;
+  --bg2:       #0f1215;
+  --surface:   #141820;
+  --surface2:  #1a2030;
+  --border:    #1e2535;
+  --border2:   #28334a;
+  --text:      #e2e8f4;
+  --text2:     #8a97b0;
+  --text3:     #4a5568;
+  --accent:    #e8b86d;
+  --accent2:   #d4973a;
+  --accentbg:  rgba(232,184,109,.1);
+  --danger:    #fc6b6b;
+  --success:   #4ade80;
+  --shadow:    0 2px 20px rgba(0,0,0,.4);
+  --shadow-lg: 0 8px 60px rgba(0,0,0,.6);
+  --glass:     rgba(20,24,32,.85);
+}
+[data-theme="light"] {
+  --bg:        #faf8f4;
+  --bg2:       #f2ede4;
+  --surface:   #ffffff;
+  --surface2:  #f7f4ee;
+  --border:    #e8e0d4;
+  --border2:   #d8ccbc;
+  --text:      #1a1612;
+  --text2:     #5c5249;
+  --text3:     #a8998a;
+  --accent:    #c27a1a;
+  --accent2:   #a36015;
+  --accentbg:  rgba(194,122,26,.08);
+  --danger:    #dc2626;
+  --success:   #16a34a;
+  --shadow:    0 2px 20px rgba(0,0,0,.07);
+  --shadow-lg: 0 8px 60px rgba(0,0,0,.12);
+  --glass:     rgba(250,248,244,.88);
+}
+
+/* ═══════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: 'Manrope', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+button { font-family: inherit; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* ═══════════════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════════════ */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  height: 62px;
+  background: var(--glass);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 clamp(16px, 4vw, 48px);
+  gap: 16px;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.topbar-logo {
+  font-family: 'Fraunces', serif;
+  font-size: 26px; font-weight: 900;
+  color: var(--accent);
+  letter-spacing: -.02em;
+  flex-shrink: 0;
+}
+.topbar-cats {
+  display: flex; gap: 4px;
+  overflow-x: auto; scrollbar-width: none;
+  flex: 1; margin: 0 8px;
+}
+.topbar-cats::-webkit-scrollbar { display: none; }
+.cat-pill {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12.5px; font-weight: 700;
+  color: var(--text3);
+  background: none; border: none; cursor: pointer;
+  transition: all var(--dur) var(--ease);
+  white-space: nowrap;
+  letter-spacing: .02em;
+}
+.cat-pill:hover  { color: var(--text); background: var(--surface2); }
+.cat-pill.active { color: var(--accent); background: var(--accentbg); }
+
+.topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text2);
+  cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--dur) var(--ease);
+}
+.icon-btn:hover { color: var(--text); border-color: var(--border2); background: var(--surface2); }
+
+.theme-toggle {
+  width: 54px; height: 30px; border-radius: 100px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  cursor: pointer;
+  position: relative; overflow: hidden;
+  transition: all var(--dur) var(--ease);
+  flex-shrink: 0;
+}
+.toggle-knob {
+  position: absolute; top: 3px; left: 3px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent);
+  transition: transform var(--dur) var(--ease);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+}
+[data-theme="light"] .toggle-knob { transform: translateX(24px); }
+
+/* ═══════════════════════════════════════════════
+   SEARCH PANEL
+═══════════════════════════════════════════════ */
+.search-panel {
+  position: fixed; top: 62px; left: 0; right: 0; z-index: 40;
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px clamp(16px,4vw,48px);
+  transform: translateY(-110%);
+  transition: transform .25s var(--ease);
+}
+.search-panel.open { transform: translateY(0); }
+.search-wrap {
+  max-width: 640px; margin: 0 auto; position: relative;
+}
+.search-wrap input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text); font-family: 'Manrope', sans-serif;
+  font-size: 15px; font-weight: 500;
+  padding: 11px 18px 11px 44px;
+  border-radius: 12px; outline: none;
+  transition: all var(--dur) var(--ease);
+}
+.search-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accentbg); }
+.search-wrap input::placeholder { color: var(--text3); }
+.search-ico { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 16px; pointer-events: none; }
+
+/* ═══════════════════════════════════════════════
+   PAGE BODY
+═══════════════════════════════════════════════ */
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 90px clamp(16px,4vw,48px) 60px;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 48px;
+}
+@media (max-width: 900px) { .page { grid-template-columns: 1fr; } }
+
+/* ═══════════════════════════════════════════════
+   HERO POST
+═══════════════════════════════════════════════ */
+.hero-wrap { margin-bottom: 48px; }
+.hero-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px; overflow: hidden;
+  cursor: pointer;
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease);
+}
+.hero-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--border2); }
+.hero-img {
+  width: 100%; height: 340px; object-fit: cover;
+  border-bottom: 1px solid var(--border);
+}
+@media (max-width: 600px) { .hero-img { height: 200px; } }
+.hero-body { padding: clamp(20px,4vw,36px); }
+.hero-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.hero-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: 900; line-height: 1.15;
+  color: var(--text); margin-bottom: 12px;
+  letter-spacing: -.02em;
+}
+.hero-excerpt {
+  font-family: 'Lora', serif;
+  font-size: 16px; line-height: 1.75;
+  color: var(--text2); margin-bottom: 18px;
+}
+.hero-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+
+/* ═══════════════════════════════════════════════
+   POST GRID
+═══════════════════════════════════════════════ */
+.section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 13px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .14em;
+  color: var(--text3);
+}
+.section-line {
+  flex: 1; height: 1px;
+  background: var(--border);
+  margin-left: 14px;
+}
+
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.post-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden;
+  cursor: pointer;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease), border-color .2s var(--ease);
+  display: flex; flex-direction: column;
+  animation: fadeIn .35s var(--ease) both;
+}
+.post-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--border2); }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-thumb {
+  width: 100%; height: 175px; object-fit: cover;
+  border-bottom: 1px solid var(--border);
+}
+.card-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+.card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 17px; font-weight: 700; line-height: 1.3;
+  color: var(--text); margin-bottom: 8px;
+  letter-spacing: -.01em;
+  flex: 1;
+}
+.card-excerpt {
+  font-family: 'Lora', serif;
+  font-size: 13.5px; color: var(--text2); line-height: 1.65;
+  margin-bottom: 14px; flex: 1;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.card-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 12px; border-top: 1px solid var(--border);
+  gap: 8px;
+}
+.card-author { display: flex; align-items: center; gap: 7px; }
+
+/* ═══════════════════════════════════════════════
+   SHARED COMPONENTS
+═══════════════════════════════════════════════ */
+.avatar {
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-weight: 800; color: #fff; flex-shrink: 0;
+  font-family: 'Fraunces', serif;
+}
+.av-md { width: 40px; height: 40px; font-size: 16px; }
+.av-sm { width: 28px; height: 28px; font-size: 11px; }
+.av-xs { width: 22px; height: 22px; font-size: 9px; }
+
+.cat-badge {
+  font-size: 10px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .07em;
+  padding: 3px 9px; border-radius: 100px;
+  border: 1px solid; white-space: nowrap;
+}
+
+.tag {
+  font-size: 12px; font-weight: 600;
+  color: var(--accent); cursor: pointer;
+  transition: color var(--dur) var(--ease);
+}
+.tag:hover { color: var(--accent2); text-decoration: underline; }
+
+.time-str { font-size: 12px; color: var(--text3); font-weight: 600; }
+.views    { font-size: 12px; color: var(--text3); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px 20px; border-radius: 10px;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; border: none;
+  transition: all var(--dur) var(--ease);
+  letter-spacing: .01em;
+}
+.btn-gold    { background: var(--accent); color: #fff; box-shadow: 0 2px 12px var(--accentbg); }
+.btn-gold:hover { background: var(--accent2); transform: translateY(-1px); }
+.btn-ghost   { background: var(--surface2); border: 1px solid var(--border2); color: var(--text2); }
+.btn-ghost:hover { color: var(--text); border-color: var(--border); }
+.btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 8px; }
+.btn-link { background: none; border: none; color: var(--accent); font-size: 13px; font-weight: 700; cursor: pointer; padding: 0; }
+.btn-link:hover { color: var(--accent2); text-decoration: underline; }
+
+/* ═══════════════════════════════════════════════
+   PAGINATION
+═══════════════════════════════════════════════ */
+.load-sentinel {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; justify-content: center;
+  padding: 32px 0; gap: 10px;
+  color: var(--text3); font-size: 13px; font-weight: 600;
+}
+.load-sentinel.hidden { display: none; }
+.feed-end {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 40px 0 20px;
+  color: var(--text3); font-size: 13px; font-weight: 600;
+  letter-spacing: .04em;
+}
+.feed-end span { color: var(--accent); font-size: 16px; }
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════ */
+.sidebar { display: flex; flex-direction: column; gap: 24px; }
+.widget {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px;
+  transition: border-color var(--dur) var(--ease);
+}
+.widget-title {
+  font-family: 'Fraunces', serif;
+  font-size: 16px; font-weight: 700;
+  color: var(--text); margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.widget-cat {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 8px; border-radius: 10px;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+  font-size: 13.5px; font-weight: 600; color: var(--text2);
+}
+.widget-cat:hover { background: var(--surface2); color: var(--text); }
+.cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.auth-widget-btns { display: flex; flex-direction: column; gap: 8px; }
+.auth-widget-text {
+  font-family: 'Lora', serif;
+  font-size: 14px; line-height: 1.6; color: var(--text2);
+  margin-bottom: 16px;
+}
+.logged-user-card { display: flex; align-items: center; gap: 12px; }
+.logged-user-name { font-weight: 800; font-size: 15px; }
+.logged-user-role { font-size: 11px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+.logout-link { font-size: 12px; color: var(--text3); cursor: pointer; margin-top: 2px; transition: color var(--dur) var(--ease); }
+.logout-link:hover { color: var(--danger); }
+
+.trending-tag {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 8px; border-radius: 10px; cursor: pointer;
+  transition: background var(--dur) var(--ease);
+}
+.trending-tag:hover { background: var(--surface2); }
+.trending-name { font-size: 13.5px; font-weight: 700; color: var(--accent); }
+.trending-count { font-size: 11px; color: var(--text3); font-weight: 600; }
+
+/* ═══════════════════════════════════════════════
+   SPINNER / EMPTY
+═══════════════════════════════════════════════ */
+.spinner { text-align: center; padding: 60px 20px; color: var(--text3); }
+.spin-ring {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  animation: spin .7s linear infinite;
+  margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty { text-align: center; padding: 80px 20px; color: var(--text3); }
+.empty-icon { font-size: 48px; margin-bottom: 12px; opacity: .4; }
+.empty-text { font-family: 'Lora', serif; font-size: 15px; }
+
+/* ═══════════════════════════════════════════════
+   OVERLAYS & MODALS
+═══════════════════════════════════════════════ */
+.overlay {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(0,0,0,.7);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 24px 16px; overflow-y: auto;
+  animation: overlayIn .2s var(--ease);
+}
+.overlay.hidden { display: none; }
+@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── Post modal ── */
+.post-modal {
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  width: 100%; max-width: 720px;
+  margin: auto;
+  box-shadow: var(--shadow-lg);
+  animation: modalSlide .28s var(--ease);
+  overflow: hidden;
+}
+@keyframes modalSlide {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.modal-header {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 20px;
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.close-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text2); font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--dur) var(--ease); flex-shrink: 0;
+}
+.close-btn:hover { background: var(--border2); color: var(--text); }
+.modal-content { padding: 28px 28px 32px; }
+@media (max-width: 600px) { .modal-content { padding: 20px 18px 28px; } }
+
+.post-hero-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(22px, 5vw, 34px);
+  font-weight: 900; line-height: 1.15;
+  letter-spacing: -.02em;
+  color: var(--text); margin-bottom: 14px;
+}
+.post-info-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px; flex-wrap: wrap;
+  font-size: 13px; color: var(--text3); font-weight: 600;
+}
+.post-cover-img {
+  width: 100%; max-height: 400px; object-fit: cover;
+  border-radius: 14px; margin-bottom: 24px;
+  border: 1px solid var(--border);
+}
+.post-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
+.divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+.prose {
+  font-family: 'Lora', serif;
+  font-size: 17px; line-height: 1.85;
+  color: var(--text2);
+}
+.prose h1,.prose h2,.prose h3 {
+  font-family: 'Fraunces', serif;
+  color: var(--text); line-height: 1.2; margin: 30px 0 12px;
+}
+.prose h1 { font-size: 28px; } .prose h2 { font-size: 23px; } .prose h3 { font-size: 19px; }
+.prose p { margin-bottom: 18px; }
+.prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.prose blockquote {
+  border-left: 3px solid var(--accent); padding: 12px 20px;
+  color: var(--text3); margin: 24px 0;
+  font-style: italic; background: var(--accentbg); border-radius: 0 10px 10px 0;
+}
+.prose code { background: var(--surface2); padding: 2px 8px; border-radius: 6px; font-size: 14px; font-family: 'Courier New', monospace; color: var(--accent); }
+.prose pre { background: var(--surface2); border: 1px solid var(--border); padding: 20px; border-radius: 12px; overflow-x: auto; margin: 20px 0; }
+.prose pre code { background: none; padding: 0; }
+.prose ul,.prose ol { padding-left: 24px; margin-bottom: 18px; }
+.prose li { margin-bottom: 8px; }
+.prose img { max-width: 100%; border-radius: 10px; margin: 14px 0; }
+.prose strong { color: var(--text); font-weight: 700; }
+
+/* Comments */
+.comments-title {
+  font-family: 'Fraunces', serif;
+  font-size: 20px; font-weight: 700;
+  color: var(--text); margin-bottom: 18px;
+}
+.comment-item {
+  display: flex; gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.comment-item:last-child { border-bottom: none; }
+.comment-author { font-weight: 800; font-size: 13.5px; }
+.comment-time   { font-size: 11px; color: var(--text3); font-weight: 600; margin-left: 8px; }
+.comment-text   { font-family: 'Lora', serif; font-size: 14.5px; color: var(--text2); line-height: 1.6; margin-top: 4px; }
+.comment-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px;
+  margin-top: 18px;
+}
+.comment-box textarea {
+  width: 100%; background: transparent; border: none;
+  color: var(--text); font-family: 'Lora', serif; font-size: 15px;
+  line-height: 1.6; resize: none; outline: none;
+}
+.comment-box textarea::placeholder { color: var(--text3); }
+.comment-box-foot {
+  display: flex; justify-content: flex-end; align-items: center; gap: 8px;
+  margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+}
+.comment-msg { font-size: 12px; margin-top: 6px; }
+.login-prompt {
+  text-align: center; padding: 18px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; margin-top: 18px;
+  font-family: 'Lora', serif; font-size: 14.5px; color: var(--text2);
+}
+
+/* ── Auth modal ── */
+.auth-modal {
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  width: 100%; max-width: 400px;
+  margin: auto;
+  box-shadow: var(--shadow-lg);
+  padding: 36px 32px;
+  animation: modalSlide .28s var(--ease);
+}
+@media (max-width: 500px) { .auth-modal { padding: 28px 20px; } }
+.auth-logo { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 900; color: var(--accent); margin-bottom: 4px; }
+.auth-sub { font-size: 13px; color: var(--text3); font-weight: 600; margin-bottom: 28px; }
+
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--text3); margin-bottom: 6px; }
+.form-input {
+  width: 100%;
+  background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--text); font-family: 'Manrope', sans-serif;
+  font-size: 14px; font-weight: 500;
+  padding: 11px 15px; border-radius: 10px; outline: none;
+  transition: all var(--dur) var(--ease);
+}
+.form-input:focus { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px var(--accentbg); }
+.form-input::placeholder { color: var(--text3); }
+.form-err { font-size: 12.5px; color: var(--danger); margin-top: 8px; display: none; }
+.form-switch { text-align: center; margin-top: 20px; font-size: 13px; color: var(--text3); }
+.form-switch a { color: var(--accent); cursor: pointer; font-weight: 700; }
+.form-switch a:hover { text-decoration: underline; }
+
+/* ═══════════════════════════════════════════════
+   MOBILE
+═══════════════════════════════════════════════ */
+@media (max-width: 900px) { .sidebar { display: none; } }
+@media (max-width: 600px) {
+  .hero-title { font-size: 22px; }
+  .posts-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     TOPBAR
+════════════════════════════════════════════ -->
+<header class="topbar">
+  <div class="topbar-logo">BlogX</div>
+
+  <nav class="topbar-cats" id="topbarCats">
+    <button class="cat-pill active" onclick="filterAll(this)">Todo</button>
+  </nav>
+
+  <div class="topbar-right">
+    <button class="icon-btn" onclick="toggleSearch()" title="Buscar">🔍</button>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" aria-label="Cambiar tema">
+      <div class="toggle-knob" id="themeKnob">🌙</div>
+    </button>
+    <button class="btn btn-gold btn-sm" id="btnLogin"     onclick="showAuth('login')" style="display:none">Entrar</button>
+    <button class="btn btn-ghost btn-sm" id="btnRegister"  onclick="showAuth('register')" style="display:none">Registro</button>
+    <div id="userTopbar" style="display:none;align-items:center;gap:8px">
+      <div class="avatar av-sm" id="topbarAvatar"></div>
+      <button class="btn btn-ghost btn-sm" onclick="window.location='/admin'">Panel ↗</button>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════════
+     SEARCH
+════════════════════════════════════════════ -->
+<div class="search-panel" id="searchPanel">
+  <div class="search-wrap">
+    <span class="search-ico">🔍</span>
+    <input type="text" id="searchInput" placeholder="Buscar artículos, autores, etiquetas…"
+      onkeyup="if(event.key==='Enter') doSearch()" />
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     MAIN PAGE
+════════════════════════════════════════════ -->
+<div class="page">
+
+  <!-- FEED -->
+  <main>
+    <!-- Hero -->
+    <div class="hero-wrap" id="heroWrap"></div>
+
+    <!-- Grid -->
+    <div class="section-head">
+      <span class="section-title" id="sectionLabel">Publicaciones recientes</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="posts-grid" id="postsGrid">
+      <div class="spinner" style="grid-column:1/-1">
+        <div class="spin-ring"></div>
+        <div>Cargando artículos…</div>
+      </div>
+    </div>
+
+    <!-- Infinite scroll sentinel -->
+    <div id="loadSentinel" class="load-sentinel hidden">
+      <div class="spin-ring"></div><span>Cargando más…</span>
+    </div>
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebarEl">
+
+    <!-- Auth / user -->
+    <div class="widget" id="authWidget">
+      <div class="widget-title">Bienvenido</div>
+      <p class="auth-widget-text">Únete a BlogX para publicar artículos, comentar y personalizar tu experiencia de lectura.</p>
+      <div class="auth-widget-btns">
+        <button class="btn btn-gold" style="width:100%" onclick="showAuth('register')">Crear cuenta</button>
+        <button class="btn btn-ghost" style="width:100%" onclick="showAuth('login')">Iniciar sesión</button>
+      </div>
+    </div>
+    <div class="widget" id="userWidget" style="display:none">
+      <div class="logged-user-card">
+        <div class="avatar av-md" id="sidebarAvatar"></div>
+        <div>
+          <div class="logged-user-name" id="sidebarName"></div>
+          <div class="logged-user-role" id="sidebarRole"></div>
+          <div class="logout-link" onclick="doLogout()">Cerrar sesión</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="widget">
+      <div class="widget-title">Categorías</div>
+      <div id="catsWidget"><div class="spinner" style="padding:8px"><div class="spin-ring" style="width:20px;height:20px;border-width:2px;margin-bottom:0"></div></div></div>
+    </div>
+
+    <!-- Trending tags -->
+    <div class="widget" id="trendingWidget" style="display:none">
+      <div class="widget-title">Trending</div>
+      <div id="trendingList"></div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- ════════════════════════════════════════════
+     POST MODAL
+════════════════════════════════════════════ -->
+<div class="overlay hidden" id="postOverlay">
+  <div class="post-modal">
+    <div class="modal-header">
+      <button class="close-btn" onclick="closePost()">✕</button>
+      <span style="font-size:13px;font-weight:700;color:var(--text3)">Artículo</span>
+      <div style="flex:1"></div>
+      <span id="mViews" class="views"></span>
+    </div>
+    <div class="modal-content">
+      <div id="mCatBadge" style="margin-bottom:12px"></div>
+      <h1 class="post-hero-title" id="mTitle"></h1>
+      <div class="post-info-row" id="mInfoRow"></div>
+      <img id="mCover" class="post-cover-img" style="display:none" />
+      <div class="post-tags" id="mTags"></div>
+      <div class="prose" id="mBody"></div>
+      <hr class="divider">
+      <div class="comments-title">Respuestas</div>
+      <div id="commentsList"></div>
+      <div id="commentLoginPrompt" class="login-prompt" style="display:none">
+        <a onclick="showAuth('login')" style="color:var(--accent);cursor:pointer;font-weight:700">Inicia sesión</a> para dejar un comentario
+      </div>
+      <div id="commentFormBox" class="comment-box" style="display:none">
+        <textarea id="commentText" rows="3" placeholder="Escribe tu respuesta…"></textarea>
+        <div class="comment-box-foot">
+          <button class="btn btn-gold btn-sm" onclick="submitComment()">Publicar respuesta</button>
+        </div>
+        <div class="comment-msg" id="commentMsg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     AUTH MODAL
+════════════════════════════════════════════ -->
+<div class="overlay hidden" id="authOverlay">
+  <div class="auth-modal">
+    <button class="close-btn" onclick="closeAuth()" style="margin-bottom:20px">✕</button>
+
+    <!-- Register -->
+    <div id="regPanel">
+      <div class="auth-logo">BlogX</div>
+      <div class="auth-sub">Crea tu cuenta gratis</div>
+      <div class="form-group">
+        <label class="form-label">Nombre completo</label>
+        <input class="form-input" id="rName" type="text" placeholder="Ada Lovelace" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Correo electrónico</label>
+        <input class="form-input" id="rEmail" type="email" placeholder="ada@ejemplo.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" id="rPass" type="password" placeholder="Mínimo 6 caracteres" onkeyup="if(event.key==='Enter')doRegister()" />
+      </div>
+      <div class="form-err" id="rErr"></div>
+      <button class="btn btn-gold" style="width:100%;margin-top:10px;padding:13px" onclick="doRegister()">Crear cuenta</button>
+      <div class="form-switch">¿Ya tienes cuenta? <a onclick="switchAuth('login')">Inicia sesión</a></div>
+    </div>
+
+    <!-- Login -->
+    <div id="loginPanel" style="display:none">
+      <div class="auth-logo">BlogX</div>
+      <div class="auth-sub">Bienvenido de vuelta</div>
+      <div class="form-group">
+        <label class="form-label">Correo electrónico</label>
+        <input class="form-input" id="lEmail" type="email" placeholder="ada@ejemplo.com" onkeyup="if(event.key==='Enter')doLogin()" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" id="lPass" type="password" placeholder="Tu contraseña" onkeyup="if(event.key==='Enter')doLogin()" />
+      </div>
+      <div class="form-err" id="lErr"></div>
+      <button class="btn btn-gold" style="width:100%;margin-top:10px;padding:13px" onclick="doLogin()">Iniciar sesión</button>
+      <div class="form-switch">¿No tienes cuenta? <a onclick="switchAuth('register')">Regístrate</a></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════ */
+let user  = null;
+let token = localStorage.getItem('bx_token') || '';
+let page  = 1, totalPages = 1, loadingMore = false, isFirstLoad = true;
+let searchQ = '', catId = '', tagFilter = '';
+let currentPostId = null;
+let isDark = localStorage.getItem('bx_theme') !== 'light';
+
+/* ════════════════════════════════════════════
+   BOOT
+════════════════════════════════════════════ */
+(async () => {
+  applyTheme();
+  showGuestButtons();
+  if (token) await fetchMe();
+  await loadCategories();
+  loadPosts();
+})();
+
+/* ════════════════════════════════════════════
+   THEME
+════════════════════════════════════════════ */
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  document.getElementById('themeKnob').textContent = isDark ? '🌙' : '☀️';
+}
+function toggleTheme() {
+  isDark = !isDark;
+  localStorage.setItem('bx_theme', isDark ? 'dark' : 'light');
+  applyTheme();
+}
+
+/* ════════════════════════════════════════════
+   AUTH
+════════════════════════════════════════════ */
+function showGuestButtons() {
+  document.getElementById('btnLogin').style.display    = '';
+  document.getElementById('btnRegister').style.display = '';
+  document.getElementById('userTopbar').style.display  = 'none';
+  document.getElementById('authWidget').style.display  = '';
+  document.getElementById('userWidget').style.display  = 'none';
+}
+function showUserUI() {
+  document.getElementById('btnLogin').style.display    = 'none';
+  document.getElementById('btnRegister').style.display = 'none';
+  document.getElementById('userTopbar').style.display  = 'flex';
+  document.getElementById('authWidget').style.display  = 'none';
+  document.getElementById('userWidget').style.display  = '';
+
+  const col  = strColor(user.name);
+  const init = user.name[0].toUpperCase();
+
+  const ta = document.getElementById('topbarAvatar');
+  ta.textContent = init; ta.style.background = col;
+
+  const sa = document.getElementById('sidebarAvatar');
+  sa.textContent = init; sa.style.background = col;
+  document.getElementById('sidebarName').textContent = user.name;
+  document.getElementById('sidebarRole').textContent = user.role === 'admin' ? 'Administrador' : 'Autor';
+
+  updateCommentUI();
+}
+
+async function fetchMe() {
+  const r = await api('/api/auth/me');
+  if (r.ok) { user = await r.json(); showUserUI(); }
+  else { token = ''; localStorage.removeItem('bx_token'); showGuestButtons(); }
+}
+
+async function doRegister() {
+  const name  = val('rName'), email = val('rEmail'), password = val('rPass');
+  const errEl = document.getElementById('rErr');
+  errEl.style.display = 'none';
+  if (!name||!email||!password) { showErr(errEl,'Todos los campos son obligatorios'); return; }
+  const r = await api('/api/auth/register',{method:'POST',body:{name,email,password}});
+  const d = await r.json();
+  if (!r.ok) { showErr(errEl, d.error||'Error al registrarse'); return; }
+  token = d.token; localStorage.setItem('bx_token', token); user = d.user;
+  showUserUI(); closeAuth();
+}
+
+async function doLogin() {
+  const email = val('lEmail'), password = val('lPass');
+  const errEl = document.getElementById('lErr');
+  errEl.style.display = 'none';
+  if (!email||!password) { showErr(errEl,'Ingresa email y contraseña'); return; }
+  const r = await api('/api/auth/login',{method:'POST',body:{email,password}});
+  const d = await r.json();
+  if (!r.ok) { showErr(errEl, d.error||'Credenciales incorrectas'); return; }
+  token = d.token; localStorage.setItem('bx_token', token); user = d.user;
+  showUserUI(); closeAuth();
+}
+
+function doLogout() {
+  token=''; user=null; localStorage.removeItem('bx_token');
+  showGuestButtons(); updateCommentUI();
+}
+
+function showAuth(mode) {
+  switchAuth(mode);
+  document.getElementById('authOverlay').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+function closeAuth() {
+  document.getElementById('authOverlay').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+function switchAuth(mode) {
+  document.getElementById('regPanel').style.display   = mode==='register' ? '' : 'none';
+  document.getElementById('loginPanel').style.display = mode==='login'    ? '' : 'none';
+}
+document.getElementById('authOverlay').addEventListener('click', e => { if(e.target===document.getElementById('authOverlay')) closeAuth(); });
+
+/* ════════════════════════════════════════════
+   CATEGORIES
+════════════════════════════════════════════ */
+async function loadCategories() {
+  const r    = await api('/api/categories');
+  const cats = await r.json();
+
+  /* topbar pills */
+  const nav = document.getElementById('topbarCats');
+  while(nav.children.length > 1) nav.removeChild(nav.lastChild);
+  cats.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-pill';
+    btn.textContent = c.name;
+    btn.onclick = () => filterCat(c._id, btn);
+    nav.appendChild(btn);
+  });
+
+  /* sidebar widget */
+  const w = document.getElementById('catsWidget');
+  w.innerHTML = cats.length
+    ? cats.map(c=>`
+        <div class="widget-cat" onclick="filterCat('${c._id}')">
+          <span class="cat-dot" style="background:${c.color}"></span>
+          <span>${c.name}</span>
+        </div>`).join('')
+    : '<div style="font-size:13px;color:var(--text3)">Sin categorías aún.</div>';
+}
+
+function filterAll(btn) {
+  catId=''; tagFilter=''; searchQ=''; page=1;
+  document.getElementById('searchInput').value='';
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
+  (btn||document.querySelector('.cat-pill')).classList.add('active');
+  document.getElementById('sectionLabel').textContent = 'Publicaciones recientes';
+  loadPosts();
+}
+function filterCat(id, btn) {
+  catId=id; tagFilter=''; page=1;
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
+  btn?.classList.add('active');
+  loadPosts();
+}
+function filterTag(tag) {
+  tagFilter=tag; catId=''; searchQ=''; page=1;
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
+  document.getElementById('sectionLabel').textContent = `#${tag}`;
+  loadPosts();
+}
+
+/* ════════════════════════════════════════════
+   SEARCH
+════════════════════════════════════════════ */
+function toggleSearch() {
+  const p = document.getElementById('searchPanel');
+  p.classList.toggle('open');
+  if (p.classList.contains('open')) document.getElementById('searchInput').focus();
+}
+function doSearch() {
+  searchQ = val('searchInput'); catId=''; tagFilter=''; page=1;
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
+  document.getElementById('sectionLabel').textContent = searchQ ? `"${searchQ}"` : 'Publicaciones recientes';
+  loadPosts();
+}
+
+/* ════════════════════════════════════════════
+   POSTS — INFINITE SCROLL
+════════════════════════════════════════════ */
+
+// Sentinel observer — dispara fetchMore cuando el centinela entra al viewport
+const sentinel = document.getElementById('loadSentinel');
+const scrollObserver = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting && !loadingMore && page < totalPages) {
+    fetchMore();
+  }
+}, { rootMargin: '400px' });
+scrollObserver.observe(sentinel);
+
+// Resetea y carga desde cero (al cambiar filtros / búsqueda)
+async function loadPosts() {
+  page = 1; totalPages = 1; isFirstLoad = true; loadingMore = false;
+
+  document.getElementById('postsGrid').innerHTML = `
+    <div class="spinner" style="grid-column:1/-1">
+      <div class="spin-ring"></div><div>Cargando artículos…</div>
+    </div>`;
+  document.getElementById('heroWrap').innerHTML = '';
+  // Limpiar mensaje de fin si existe
+  document.querySelectorAll('.feed-end').forEach(el => el.remove());
+  sentinel.classList.add('hidden');
+
+  await fetchBatch(true);
+}
+
+// Carga el siguiente lote (llamado por el observer)
+async function fetchMore() {
+  if (loadingMore || page >= totalPages) return;
+  page++;
+  await fetchBatch(false);
+}
+
+// Ejecuta la llamada al API y renderiza los resultados
+async function fetchBatch(isFirst) {
+  loadingMore = true;
+  if (!isFirst) sentinel.classList.remove('hidden');
+
+  const q = new URLSearchParams({ page, limit: 12 });
+  if (searchQ)   q.set('search', searchQ);
+  if (catId)     q.set('category', catId);
+  if (tagFilter) q.set('tag', tagFilter);
+
+  const r    = await api('/api/posts/public?' + q);
+  const data = await r.json();
+  totalPages = data.totalPages || 1;
+
+  const grid = document.getElementById('postsGrid');
+
+  if (isFirst) {
+    grid.innerHTML = '';
+    if (!data.posts?.length) {
+      grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">✦</div><div class="empty-text">No hay publicaciones aquí aún.</div></div>`;
+      sentinel.classList.add('hidden');
+      loadingMore = false;
+      return;
+    }
+    // Primera carga: hero + resto
+    const [hero, ...rest] = data.posts;
+    renderHero(hero);
+    rest.forEach((p, i) => {
+      const card = buildCard(p);
+      card.style.animationDelay = (i * 0.06) + 's';
+      grid.appendChild(card);
+    });
+
+    // Trending tags solo en la primera carga
+    const allTags = data.posts.flatMap(p => p.tags || []);
+    const freq = {};
+    allTags.forEach(t => freq[t] = (freq[t] || 0) + 1);
+    const top = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 7);
+    if (top.length) {
+      document.getElementById('trendingWidget').style.display = '';
+      document.getElementById('trendingList').innerHTML = top.map(([t, n]) => `
+        <div class="trending-tag" onclick="filterTag('${t}')">
+          <span class="trending-name">#${t}</span>
+          <span class="trending-count">${n} art.</span>
+        </div>`).join('');
+    }
+  } else {
+    // Cargas siguientes: solo añadir cards sin hero
+    data.posts.forEach((p, i) => {
+      const card = buildCard(p);
+      card.style.animationDelay = (i * 0.04) + 's';
+      grid.appendChild(card);
+    });
+  }
+
+  // Ocultar sentinel si ya no hay más, mostrar mensaje de fin
+  if (page >= totalPages) {
+    sentinel.classList.add('hidden');
+    if (!isFirst && data.posts?.length) {
+      const endMsg = document.createElement('div');
+      endMsg.className = 'feed-end';
+      endMsg.innerHTML = `<span>✦</span> Has leído todo — vuelve pronto para más artículos`;
+      document.getElementById('postsGrid').appendChild(endMsg);
+    }
+  } else {
+    sentinel.classList.remove('hidden');
+  }
+  loadingMore = false;
+}
+
+function renderHero(p) {
+  const wrap = document.getElementById('heroWrap');
+  const col  = strColor(p.author?.name||'A');
+  const ini  = (p.author?.name||'A')[0].toUpperCase();
+  const cat  = p.category
+    ? `<span class="cat-badge" style="color:${p.category.color};border-color:${p.category.color}50;background:${p.category.color}18">${p.category.name}</span>` : '';
+  const thumb = p.coverImage ? `<img class="hero-img" src="${p.coverImage}" onerror="this.style.display='none'" />` : '';
+  const tags  = (p.tags||[]).slice(0,4).map(t=>`<span class="tag" onclick="event.stopPropagation();filterTag('${t}')">#${t}</span>`).join(' ');
+
+  wrap.innerHTML = `
+    <div class="hero-card" onclick="openPost('${p.slug}')">
+      ${thumb}
+      <div class="hero-body">
+        <div class="hero-meta">
+          ${cat}
+          <span class="time-str">${relTime(p.publishedAt)}</span>
+        </div>
+        <div class="hero-title">${p.title}</div>
+        <div class="hero-excerpt">${(p.excerpt||'').slice(0,200)}${(p.excerpt||'').length>200?'…':''}</div>
+        <div class="hero-foot">
+          <div class="card-author">
+            <div class="avatar av-sm" style="background:${col}">${ini}</div>
+            <span style="font-size:13px;font-weight:700">${p.author?.name||'Autor'}</span>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <span style="font-size:12px;color:var(--text3)">${tags}</span>
+            <span class="views">👁 ${p.views||0}</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function buildCard(p) {
+  const el  = document.createElement('div');
+  el.className = 'post-card';
+  const col = strColor(p.author?.name||'A');
+  const ini = (p.author?.name||'A')[0].toUpperCase();
+  const cat = p.category
+    ? `<span class="cat-badge" style="color:${p.category.color};border-color:${p.category.color}50;background:${p.category.color}18">${p.category.name}</span>` : '';
+  const thumb = p.coverImage
+    ? `<img class="card-thumb" src="${p.coverImage}" onerror="this.style.display='none'" />` : '';
+  const tags = (p.tags||[]).slice(0,3).map(t=>`<span class="tag" onclick="event.stopPropagation();filterTag('${t}')">#${t}</span>`).join(' ');
+
+  el.innerHTML = `
+    ${thumb}
+    <div class="card-body">
+      <div class="card-meta">${cat}<span class="time-str">${relTime(p.publishedAt)}</span></div>
+      <div class="card-title">${p.title}</div>
+      <div class="card-excerpt">${p.excerpt||''}</div>
+      <div class="card-foot">
+        <div class="card-author">
+          <div class="avatar av-xs" style="background:${col}">${ini}</div>
+          <span style="font-size:12px;font-weight:700">${p.author?.name||'Autor'}</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <span style="font-size:11px;color:var(--text3)">${tags}</span>
+          <span class="views" style="font-size:11px">👁 ${p.views||0}</span>
+        </div>
+      </div>
+    </div>`;
+  el.onclick = e => { if (!e.target.classList.contains('tag')) openPost(p.slug); };
+  return el;
+}
+
+/* ════════════════════════════════════════════
+   POST MODAL
+════════════════════════════════════════════ */
+async function openPost(slug) {
+  const r    = await api('/api/posts/public/' + slug);
+  const post = await r.json();
+  currentPostId = post._id;
+
+  const col = strColor(post.author?.name||'A');
+  const ini = (post.author?.name||'A')[0].toUpperCase();
+
+  document.getElementById('mViews').innerHTML = `👁 ${post.views} vistas`;
+  document.getElementById('mTitle').textContent = post.title;
+  document.getElementById('mCatBadge').innerHTML = post.category
+    ? `<span class="cat-badge" style="color:${post.category.color};border-color:${post.category.color}50;background:${post.category.color}18">${post.category.name}</span>` : '';
+
+  document.getElementById('mInfoRow').innerHTML = `
+    <div class="avatar av-xs" style="background:${col}">${ini}</div>
+    <strong>${post.author?.name||''}</strong>
+    <span>·</span>
+    <span>${longDate(post.publishedAt)}</span>`;
+
+  const cover = document.getElementById('mCover');
+  if (post.coverImage) { cover.src = post.coverImage; cover.style.display=''; }
+  else cover.style.display = 'none';
+
+  document.getElementById('mTags').innerHTML = (post.tags||[]).map(t=>
+    `<span class="tag" onclick="closePost();filterTag('${t}')">#${t}</span>`).join(' ');
+
+  document.getElementById('mBody').innerHTML = post.content;
+
+  updateCommentUI();
+  await loadComments(post._id);
+
+  document.getElementById('postOverlay').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePost() {
+  document.getElementById('postOverlay').classList.add('hidden');
+  document.body.style.overflow = '';
+  currentPostId = null;
+}
+document.getElementById('postOverlay').addEventListener('click', e => { if(e.target===document.getElementById('postOverlay')) closePost(); });
+
+function updateCommentUI() {
+  document.getElementById('commentFormBox').style.display      = user ? '' : 'none';
+  document.getElementById('commentLoginPrompt').style.display  = user ? 'none' : '';
+}
+
+async function loadComments(postId) {
+  const r    = await api('/api/comments/post/' + postId);
+  const list = await r.json();
+  const cont = document.getElementById('commentsList');
+  if (!list.length) {
+    cont.innerHTML = '<div style="font-family:\'Lora\',serif;font-size:14px;color:var(--text3);padding:8px 0">Sin respuestas aún.</div>';
+    return;
+  }
+  cont.innerHTML = list.map(c=>`
+    <div class="comment-item">
+      <div class="avatar av-sm" style="background:${strColor(c.author?.name||'U')};flex-shrink:0">
+        ${(c.author?.name||'U')[0].toUpperCase()}
+      </div>
+      <div>
+        <span class="comment-author">${c.author?.name||'Usuario'}</span>
+        <span class="comment-time">${relTime(c.createdAt)}</span>
+        <div class="comment-text">${c.content}</div>
+      </div>
+    </div>`).join('');
+}
+
+async function submitComment() {
+  if (!currentPostId || !user) return;
+  const content = document.getElementById('commentText').value.trim();
+  const msg     = document.getElementById('commentMsg');
+  if (!content) { msg.style.color='var(--danger)'; msg.textContent='Escribe algo primero.'; return; }
+  const r = await api('/api/comments/post/' + currentPostId, {method:'POST', body:{content}});
+  if (r.ok) {
+    msg.style.color = 'var(--success)'; msg.textContent = '✓ Comentario publicado';
+    document.getElementById('commentText').value = '';
+    await loadComments(currentPostId);
+    setTimeout(() => msg.textContent='', 3000);
+  } else {
+    const e = await r.json(); msg.style.color='var(--danger)'; msg.textContent = e.error||'Error';
+  }
+}
+
+/* ════════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════════ */
+function api(url, opts={}) {
+  const h = {'Content-Type':'application/json'};
+  if (token) h['Authorization'] = 'Bearer ' + token;
+  return fetch(url, {
+    ...opts,
+    headers: h,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+}
+const val = id => document.getElementById(id).value.trim();
+const showErr = (el, msg) => { el.textContent=msg; el.style.display=''; };
+
+function relTime(d) {
+  if (!d) return '';
+  const s = Math.floor((Date.now() - new Date(d)) / 1000);
+  if (s < 60)    return `${s}s`;
+  if (s < 3600)  return `${Math.floor(s/60)}m`;
+  if (s < 86400) return `${Math.floor(s/3600)}h`;
+  if (s < 604800) return `${Math.floor(s/86400)}d`;
+  return new Date(d).toLocaleDateString('es-MX',{month:'short',day:'numeric'});
+}
+function longDate(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
+}
+function strColor(s) {
+  const palette = ['#e8a45a','#6b9fe4','#7ecba1','#c47bbf','#e86f6f','#60c4d0','#d4b96e'];
+  let h = 0; for (const c of s) h = c.charCodeAt(0) + ((h<<5)-h);
+  return palette[Math.abs(h) % palette.length];
+}
+</script>
+</body>
+</html>

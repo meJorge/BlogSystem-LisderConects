@@ -1,0 +1,56 @@
+# Dependencias
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Variables de entorno
+.env
+.env.local
+.env.*.local
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+logs/
+*.log
+
+# Archivos de cobertura de pruebas
+coverage/
+.nyc_output/
+
+# Archivos de construcción
+dist/
+build/
+.next/
+out/
+
+# MongoDB local
+data/
+dump/
+
+# Configuración de Render / plataformas
+.render/
+
+# Archivos de respaldo
+*.bak
+*.tmp
+
+# Archivos de debugging
+.env.debug
