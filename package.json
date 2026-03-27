@@ -2,11 +2,11 @@
   "name": "blog-system",
   "version": "1.0.0",
   "description": "Sistema de blog con panel de administración",
-  "main": "server.js",
+  "main": "src/app.js",
   "scripts": {
-  "start": "node src/app.js",
-  "dev": "nodemon app.js"
-},
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.3.1",
