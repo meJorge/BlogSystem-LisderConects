@@ -1,3 +1,35 @@
+console.log('🚀 Iniciando aplicación...');
+console.log('📂 Directorio actual:', __dirname);
+console.log('📦 Módulos cargando...');
+
+// Importa los módulos uno por uno para identificar dónde falla
+try {
+    console.log('✅ Cargando express...');
+    const express = require('express');
+    console.log('✅ Express cargado');
+    
+    console.log('✅ Cargando mongoose...');
+    const mongoose = require('mongoose');
+    console.log('✅ Mongoose cargado');
+    
+    // Tus otros imports...
+    
+    console.log('✅ Todos los módulos cargados');
+    
+    const app = express();
+    const PORT = process.env.PORT || 3000;
+    
+    console.log('🚀 Iniciando servidor en puerto', PORT);
+    
+    app.listen(PORT, () => {
+        console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+    });
+    
+} catch (error) {
+    console.error('❌ ERROR:', error.message);
+    console.error('Stack:', error.stack);
+    process.exit(1);
+}
 const express  = require('express');
 const path     = require('path');
 
