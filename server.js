@@ -4,9 +4,11 @@ const connectDB = require('./src/config/database');
 const seedAdmin = require('./src/config/seedAdmin');
 const { startScheduler } = require('./src/jobs/publishScheduler');
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
+// ✅ Usa la variable de entorno PORT que Railway proporciona
+const port = process.env.PORT || 8080;  // 8080 solo como fallback
+
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Servidor corriendo en puerto ${port}`);
 });
 
 connectDB().then(async () => {
