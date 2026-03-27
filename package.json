@@ -4,7 +4,7 @@
   "description": "Sistema de blog con panel de administración",
   "main": "server.js",
   "scripts": {
-  "start": "node app.js",
+  "start": "node src/app.js",
   "dev": "nodemon app.js"
 },
   "dependencies": {
